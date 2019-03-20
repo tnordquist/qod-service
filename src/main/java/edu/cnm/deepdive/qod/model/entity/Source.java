@@ -1,5 +1,8 @@
 package edu.cnm.deepdive.qod.model.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import edu.cnm.deepdive.qod.view.FlatQuote;
+import edu.cnm.deepdive.qod.view.FlatSource;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,7 +20,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.springframework.lang.NonNull;
 
 @Entity
-public class Source {
+public class Source implements FlatSource {
 
   @Id
   @GeneratedValue(generator = "uuid2")
@@ -36,6 +39,7 @@ public class Source {
   @Column(length = 1024, nullable = false, unique = true)
   private String name;
 
+  @JsonSerialize(contentAs = FlatQuote.class)
   @OneToMany(mappedBy = "source", fetch = FetchType.EAGER)
   private List<Quote> quotes = new LinkedList<>();
 
