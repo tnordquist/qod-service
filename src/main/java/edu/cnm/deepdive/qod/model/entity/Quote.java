@@ -37,7 +37,7 @@ public class Quote implements FlatQuote {
   private Date created;
 
   @NonNull
-  @Column(length = 4096, nullable = false)
+  @Column(length = 4096, nullable = false, unique = true)
   private String text;
 
   @JsonSerialize(as = FlatSource.class)
