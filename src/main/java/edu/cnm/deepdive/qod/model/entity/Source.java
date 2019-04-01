@@ -10,13 +10,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Index;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import org.hibernate.annotations.CreationTimestamp;
@@ -51,7 +54,9 @@ public class Source implements FlatSource {
   private String name;
 
   @JsonSerialize(contentAs = FlatQuote.class)
-  @OneToMany(mappedBy = "source", fetch = FetchType.EAGER)
+  @ManyToMany(fetch = FetchType.LAZY, mappedBy = "sources",
+      cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+  @OrderBy("text ASC")
   private List<Quote> quotes = new LinkedList<>();
 
   public UUID getId() {

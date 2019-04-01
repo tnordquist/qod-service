@@ -10,12 +10,12 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface QuoteRepository extends CrudRepository<Quote, UUID> {
 
-  Optional<Quote> findBySourceAndId(Source source, UUID quoteId);
-
-  @Query(value = "SELECT * FROM quote ORDER BY RANDOM() OFFSET 0 ROWS FETCH NEXT 1 ROW ONLY",
+  @Query(value = "SELECT * FROM sa.quote ORDER BY RANDOM() OFFSET 0 ROWS FETCH NEXT 1 ROW ONLY",
       nativeQuery = true)
   Optional<Quote> findRandom();
 
   List<Quote> findAllByTextContainingOrderByTextAsc(String fragment);
+
+  List<Quote> findAllByOrderByTextAsc();
 
 }
