@@ -1,3 +1,18 @@
+/*
+ *  Copyright 2019 Nicholas Bennett & Deep Dive Coding
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package edu.cnm.deepdive.qod.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -28,10 +43,14 @@ import org.springframework.hateoas.EntityLinks;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
+/**
+ * Defines a database entity and REST resource representing the a quote source, and its
+ * relationships to zero or more {@link Quote} resources.
+ */
+@Entity
+@Component
 @JsonIgnoreProperties(
     value = {"created", "quotes", "href"}, allowGetters = true, ignoreUnknown = true)
-@Component
-@Entity
 public class Source implements FlatSource {
 
   private static EntityLinks entityLinks;
@@ -59,33 +78,47 @@ public class Source implements FlatSource {
   @OrderBy("text ASC")
   private Set<Quote> quotes = new LinkedHashSet<>();
 
+  @Override
   public UUID getId() {
     return id;
   }
 
+  @Override
   public Date getCreated() {
     return created;
   }
 
+  @Override
   public String getName() {
     return name;
   }
 
+  /**
+   * Sets the name of this <code>Source</code> instance.
+   *
+   * @param name quote source name.
+   */
   public void setName(String name) {
     this.name = name;
   }
 
+  /**
+   * Returns a {@link Set} of the {@link Quote} instances related to this <code>Source</code>.
+   *
+   * @return {@link Quote} set.
+   */
   public Set<Quote> getQuotes() {
     return quotes;
   }
 
+  @Override
   public URI getHref() {
     return entityLinks.linkForSingleResource(Source.class, id).toUri();
   }
 
   @PostConstruct
   private void init() {
-    String ignore = entityLinks.toString();
+    String ignore = entityLinks.toString(); // Deliberately ignored.
   }
 
   @Autowired
@@ -93,11 +126,26 @@ public class Source implements FlatSource {
     Source.entityLinks = entityLinks;
   }
 
+  /**
+   * Computes and returns a hash value computed from {@link #getName()}, after first converting to
+   * uppercase.
+   *
+   * @return hash value.
+   */
   @Override
   public int hashCode() {
     return (name != null) ? name.toUpperCase().hashCode() : 0;
   }
 
+  /**
+   * Implements an equality test based on a case-insensitive comparison of the text returned by
+   * {@link #getName()}. If the other object is <code>null</code>, or if one (but not both) of the
+   * instances' {@link #getName()} values is <code>null</code>, then <code>false</code> is returned;
+   * otherwise, the name values are compared using {@link String#equalsIgnoreCase(String)}.
+   *
+   * @param obj object to which this instance will compare itself, based on {@link #getName()}.
+   * @return <code>true</code> if the values are equal, ignoring case; <code>false</code> otherwise.
+   */
   @Override
   public boolean equals(Object obj) {
     if (obj == null || obj.getClass() != getClass()) {

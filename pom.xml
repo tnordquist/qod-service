@@ -13,8 +13,8 @@
 
   <groupId>edu.cnm.deepdive</groupId>
   <artifactId>qod</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <name>qod</name>
+  <version>2.0.0-SNAPSHOT</version>
+  <name>Quote of the Day Service</name>
   <description>Quote of the Day Spring Boot application</description>
 
   <properties>
@@ -53,17 +53,72 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>5.4.1</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>5.4.1</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.interceptor</groupId>
+      <artifactId>javax.interceptor-api</artifactId>
+      <version>1.2.2</version>
     </dependency>
 
   </dependencies>
 
   <build>
+
     <plugins>
+
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>2.22.1</version>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+          <show>protected</show>
+          <links>
+            <link>https://docs.oracle.com/javase/8/docs/api/</link>
+            <link>https://javaee.github.io/javaee-spec/javadocs/</link>
+            <link>https://docs.spring.io/spring-boot/docs/2.1.3.RELEASE/api/</link>
+            <link>https://docs.spring.io/spring/docs/5.1.5.RELEASE/javadoc-api/</link>
+            <link>https://docs.spring.io/spring-hateoas/docs/0.25.1.RELEASE/</link>
+            <link>https://docs.spring.io/spring-data/commons/docs/2.1.5.RELEASE/api/</link>
+            <link>https://docs.spring.io/spring-data/commons/jpa/2.1.5.RELEASE/api/</link>
+            <link>https://docs.jboss.org/hibernate/orm/5.3/javadocs/</link>
+          </links>
+        </configuration>
+      </plugin>
+
     </plugins>
+
   </build>
 
 </project>
