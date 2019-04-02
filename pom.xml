@@ -13,11 +13,13 @@
 
   <groupId>edu.cnm.deepdive</groupId>
   <artifactId>qod</artifactId>
-  <version>2.0.0-SNAPSHOT</version>
+  <version>1.0.0-SNAPSHOT</version>
   <name>Quote of the Day Service</name>
   <description>Quote of the Day Spring Boot application</description>
 
   <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>1.8</java.version>
   </properties>
 
@@ -62,6 +64,12 @@
     </dependency>
 
     <dependency>
+      <groupId>javax.interceptor</groupId>
+      <artifactId>javax.interceptor-api</artifactId>
+      <version>1.2.2</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
       <version>5.4.1</version>
@@ -73,12 +81,6 @@
       <artifactId>junit-jupiter-engine</artifactId>
       <version>5.4.1</version>
       <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>javax.interceptor</groupId>
-      <artifactId>javax.interceptor-api</artifactId>
-      <version>1.2.2</version>
     </dependency>
 
   </dependencies>
