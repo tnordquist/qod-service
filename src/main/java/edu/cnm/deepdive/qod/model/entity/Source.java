@@ -6,8 +6,9 @@ import edu.cnm.deepdive.qod.view.FlatQuote;
 import edu.cnm.deepdive.qod.view.FlatSource;
 import java.net.URI;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.persistence.CascadeType;
@@ -16,9 +17,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Index;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -29,7 +28,8 @@ import org.springframework.hateoas.EntityLinks;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonIgnoreProperties(
+    value = {"created", "quotes", "href"}, allowGetters = true, ignoreUnknown = true)
 @Component
 @Entity
 public class Source implements FlatSource {
@@ -57,7 +57,7 @@ public class Source implements FlatSource {
   @ManyToMany(fetch = FetchType.LAZY, mappedBy = "sources",
       cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
   @OrderBy("text ASC")
-  private List<Quote> quotes = new LinkedList<>();
+  private Set<Quote> quotes = new LinkedHashSet<>();
 
   public UUID getId() {
     return id;
@@ -75,12 +75,12 @@ public class Source implements FlatSource {
     this.name = name;
   }
 
-  public List<Quote> getQuotes() {
+  public Set<Quote> getQuotes() {
     return quotes;
   }
 
-  public void setQuotes(List<Quote> quotes) {
-    this.quotes = quotes;
+  public URI getHref() {
+    return entityLinks.linkForSingleResource(Source.class, id).toUri();
   }
 
   @PostConstruct
@@ -93,8 +93,18 @@ public class Source implements FlatSource {
     Source.entityLinks = entityLinks;
   }
 
-  public URI getHref() {
-    return entityLinks.linkForSingleResource(Source.class, id).toUri();
+  @Override
+  public int hashCode() {
+    return (name != null) ? name.toUpperCase().hashCode() : 0;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null || obj.getClass() != getClass()) {
+      return false;
+    }
+    Source other = (Source) obj;
+    return Objects.equals(name, other.name) || (name != null && name.equalsIgnoreCase(other.name));
   }
 
 }

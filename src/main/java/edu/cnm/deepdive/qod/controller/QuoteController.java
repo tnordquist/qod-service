@@ -1,7 +1,9 @@
 package edu.cnm.deepdive.qod.controller;
 
 import edu.cnm.deepdive.qod.model.dao.QuoteRepository;
+import edu.cnm.deepdive.qod.model.dao.SourceRepository;
 import edu.cnm.deepdive.qod.model.entity.Quote;
+import edu.cnm.deepdive.qod.model.entity.Source;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -27,10 +29,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class QuoteController {
 
   private QuoteRepository quoteRepository;
+  private SourceRepository sourceRepository;
 
   @Autowired
-  public QuoteController(QuoteRepository quoteRepository) {
+  public QuoteController(QuoteRepository quoteRepository, SourceRepository sourceRepository) {
     this.quoteRepository = quoteRepository;
+    this.sourceRepository = sourceRepository;
   }
 
   @GetMapping(value = "random", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -65,7 +69,42 @@ public class QuoteController {
     quoteRepository.delete(get(quoteId));
   }
 
-  @ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "Quote not found")
+  @PostMapping(value = "{quoteId}/sources",
+      consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Quote> attach(
+      @PathVariable("quoteId") UUID quoteId, @RequestBody Source source) {
+    source = sourceRepository.findById(source.getId()).get();
+    Quote quote = get(quoteId);
+    quote.getSources().add(source);
+    quoteRepository.save(quote);
+    return ResponseEntity.ok(quote);
+  }
+
+  @GetMapping(value = "{quoteId}/sources/{sourceId}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public Source get(
+      @PathVariable("quoteId") UUID quoteId, @PathVariable("sourceId") UUID sourceId) {
+    Quote quote = get(quoteId);
+    Source source = sourceRepository.findById(sourceId).get();
+    if (!quote.getSources().contains(source)) {
+      throw new NoSuchElementException();
+    }
+    return source;
+  }
+
+  @DeleteMapping(value = "{quoteId}/sources/{sourceId}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void detach(
+      @PathVariable("quoteId") UUID quoteId, @PathVariable("sourceId") UUID sourceId) {
+    Quote quote = get(quoteId);
+    Source source = sourceRepository.findById(sourceId).get();
+    if (!quote.getSources().contains(source)) {
+      throw new NoSuchElementException();
+    }
+    quote.getSources().remove(source);
+    quoteRepository.save(quote);
+  }
+
+  @ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "Resource not found")
   @ExceptionHandler(NoSuchElementException.class)
   public void notFound() {}
 
